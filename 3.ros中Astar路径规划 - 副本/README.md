@@ -27,61 +27,47 @@ f(n)=g(n)+h(n)
 
 其中，f(n)是总的搜索代价，g(n)是从起点到当前节点n的代价和，h(n)是从当前节点n到目标节点的最优代价启发函数。
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image001.jpg)
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image002.jpg)
 
 ## 2、估值函数及优化
 
 （1）曼哈顿距离：标准的启发式函数（Manhattan distance）
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image004.jpg)
-
-算法原理
-
- 
-
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg)
-
 算法实现
 
- 
+```cpp
+Heuristics 1: Manhattan
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image008.gif)
+h = std::abs(node1_coord(0) - node2_coord(0) ) +
 
-实验
+	std::abs(node1_coord(1) - node2_coord(1) ) +
+
+	std::abs(node1_coord(2) - node2_coord(2) );
+```
 
 （2）欧几里得：
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image010.jpg)
-
-算法原理
-
- 
-
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image012.jpg)
-
 算法实现
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image014.gif)
-
-实验
+```cpp
+Heuristics 2: Euclidean
+    h = std::sqrt(std::pow((node1_coord(0) - node2_coord(0)), 2 ) +
+    std::pow((node1_coord(1) - node2_coord(1)), 2 ) +
+    std::pow((node1_coord(2) - node2_coord(2)), 2 ));
+```
 
 （3）对角线
 
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image016.jpg)
+ 算法实现
 
-算法原理
-
- 
-
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image018.jpg)
-
-算法实现
-
-![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image020.gif)
-
-实验
+```cpp
+Heuristics 3: Diagnol distance
+double dx = std::abs(node1_coord(0) - node2_coord(0) );
+double dy = std::abs(node1_coord(1) - node2_coord(1) );
+double dz = std::abs(node1_coord(2) - node2_coord(2) );
+double min_xyz = std::min({dx, dy, dz});
+h = dx + dy + dz + (std::sqrt(3.0) -3) * min_xyz;
+```
 
 在经过实验后，综合计算时间和路径长度来看。欧几里得比其他启发函数略胜一筹，所以在Astar_searcher.cpp文件中选择启发函数2欧几里得距离
 
