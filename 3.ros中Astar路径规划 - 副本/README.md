@@ -1,94 +1,107 @@
-ping.c是服务端源码,放在Ubuntu系统编译并运行
-源2.cpp是客户端源码,放在window系统编译并运行
+Astar_searcher.cpp中仅修改了启发函数
+并将不同的启发函数运行并路径规划得到不同的结果截图为Astar实验截图
 
-# 中央任务调度任务—通信开发
+# **在ROS中实现A\*路径规划**
 
- [TOC]
+[TOC]
 
+## **1.**  **项目介绍**
 
+（1）A*算法，A*（A _Star)算法是一种静态路网中求解最短路径最有效的**直接**搜索方法，也是解决许多搜索问题的有效算法。算法中的距离估算值与实际值越接近，最终搜素速度越快。该算法在最短路径搜索法中，分类为直接搜索算法，启发式算法，静态图搜索算法。
 
-## 1.项目算法功能
+（2）算法分类
 
-我们的这个算法能够实现Windows和Ubuntu下信息传递，可以传递中文，英文，数字等信息，为后续的进程提供了保障。                    
+直接搜索算法；是在地图上进行搜索，不经过任何预处理；
 
-`ping.c`(Ubuntu端源代码)
+启发式算法：通过启发函数引导算法的搜索方向；（在此使用启发式算法）
 
-在Ubuntu端的代码中，我们设置了当接受到的字符串长度小于0时，显示Server Receive Data Failed！，当接收到的字符串以‘q’开头时，则显示Quit！后自动退出，当接收到正常的字符串时，则显示接收到的内容。
+静态图搜索算法：被搜索的图的权值不随时间变化（后被证明同样可以适用于动态图的搜索）
 
-`源2.cpp`（Windows端源代码）
+（3）A*算法优点
 
-在Windows端的代码中，我们设置了当成功连接socket后显示Socket Connect Succeed! Input Data:
+能够求解出状态空间搜素的最短路径，也就是用最快的方法求解问题，A*就是干这种事情的。
 
-## 2.项目实践过程
+（4）A*算法的模型
 
-第一步：
+f(n)=g(n)+h(n)
 
-更改网络IP地址，将Windows端IP地址改成192.168.0.2；子网掩码自动生成为255.255.255.0。
+其中，f(n)是总的搜索代价，g(n)是从起点到当前节点n的代价和，h(n)是从当前节点n到目标节点的最优代价启发函数。
 
-然后将Ubuntu端IP地址改成192.168.0.1；子网掩码改为255.255.255.0。
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image001.jpg)
 
-第二步：
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image002.jpg)
 
-编写`ping.c`(Ubuntu端源代码)和`源2.cpp`（Windows端源代码）
+## 2、估值函数及优化
 
-第三步：
+（1）曼哈顿距离：标准的启发式函数（Manhattan distance）
 
-编译我们写好的代码，windows端我们用的VS2015编译
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image004.jpg)
 
-Ubuntu端我们用的gcc编译:`gcc -o ping ping.c`
-
-第四步：
-
-我们进行了通信前的测试，首先从windows端向Ubuntu端ping
-
- `ping 192.168.0.1`
-
-然后从Ubuntu端向windows端ping
-
- `ping 192.169.0.1`
-
-第五步：
-
-先打开Ubuntu终端，运行我们编译的可执行程序，
-
- `./ping`
-
-然后再打开VS2015，运行客户端程序
-
-现在我们成功建立起了Windows和Ubuntu的通信。
-
-第六步：
-
-Windows端输入我们需要传递的字符，
-
-可以看到我们的Ubuntu端成功接收到字符。
-
-我们的Windows与Ubuntu的通信到这就已经完全成功了。
-
-
-
-## 3.创新点
-
-1.我们在实践的过程中发现由Ubuntu端向Windows端ping时输入192.168.0.2并没有成功，但经过我们的摸索发现应该输入192.168.0.1才能ping成功。
-
-2.在windows端输入中文时Ubuntu端接收到的是乱符，我们了解到的就是因为Windows与Ubuntu编码格式不一样，就只需要在终端的上面工具栏里点击终端，选择第一个设定字符编码，然后选择“简体中文--GBK”即可。
-
-3.我们也尝试过两台Ubuntu设备之间的ssh通信，在实践过程中，我们能明显的感觉到两台Ubuntu设备之间的ssh通信要比Windows与Ubuntu的socket通信更加便捷，可以直接打开服务端的终端进行操作，而不是简单的传输数据，并且ssh有着较好的安全性。
+算法原理
 
  
 
-## 4.总结
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image006.jpg)
 
- 这次的Windows与Ubuntu的通信我们选择的是VS2015作为上位机的开发工具，在这之前我们也没有接触过这款开发工具，完全是看到任务后开始学习的，所以我们在完成这个任务的过程中遇到了很多问题，有一些问题是可以在网上找到解决办法的，但有的问题却找不到解决办法，甚至是我们因为自己设备的问题而遇到了别人不会遇到的错误，这个时候我们只有自己去尝试，去摸索，在一遍遍的操作后才解决这些问题，成功完成了给定的任务。这让我们学会了如何去学习一些自己以前没接触过的东西，也加强了我们的自主探索能力。
-
-讲解视频地址如下：【window_ros 进行通信并消息互传-哔哩哔哩】 https://b23.tv/MHCl8XS
+算法实现
 
  
 
-## 5. 参考文献
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image008.gif)
 
-【1】使用socket 情况下的windows系统与ubuntu16.04系统通信详解.CSDN.Robot_hfut
+实验
 
-【2】 Ubuntu下进行ssh 详解.CSDN.五新
+（2）欧几里得：
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image010.jpg)
+
+算法原理
 
  
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image012.jpg)
+
+算法实现
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image014.gif)
+
+实验
+
+（3）对角线
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image016.jpg)
+
+算法原理
+
+ 
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image018.jpg)
+
+算法实现
+
+![img](file:///C:/Users/26066/AppData/Local/Temp/msohtmlclip1/01/clip_image020.gif)
+
+实验
+
+在经过实验后，综合计算时间和路径长度来看。欧几里得比其他启发函数略胜一筹，所以在Astar_searcher.cpp文件中选择启发函数2欧几里得距离
+
+ 
+
+## 3、未来优化
+
+1. 将随机地图固定
+2. 在同一地图中同时规划出两条或多条路径，以便观察哪个启发函数的更快，规划的路径更短。
+
+## 4、总结
+
+在选择哪一个启发函数时，我们小组经历了一个漫长的过程。在开始时，我们先选择了在曼哈顿距离的基础上进行优化，后来发现欧几里得距离优势可能更大，经过多次实验并对比之后，确认欧几里距离优化后得更胜一筹
+
+
+
+## 5、参考文献
+
+（1）《A* Pathfinding For Beginners》https://www.gamedev.net/reference/articles/article2003.asp
+
+（2)《基于节点优化的A*算法路径规划》
+
+https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&dbname=CJFDLAST2021&filename=TSSF202103021&uniplatform=NZKPT&v=1zKATsjb9WhfVH1tLcHlrG56cDXspgbcCxQ3SrmRD-8LnoKdcbHwHRUrIAdVZpBi
